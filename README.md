@@ -10,10 +10,6 @@
 # Mission
 
 
-sdfsdf
-
-
-
 |  Command (params1, 2 , 3)       | Action  |
 |: --------  : |  :-----:   |
 | M	{\<address>}	{\<value>}     | Display the contents of the memory word starting at address \<address> and ending at \<address+3 bytes>. If \<address> is not specified, use the previous word address + 4. If \<value> is specified, overwrite the memory contents with the specified value. If \<address> is not word-aligned, data manipulations will be necesssary to display the proper word value.     |
@@ -26,6 +22,14 @@ sdfsdf
 
 
 
+table doesn't work?
+
+
+| Command (params1, 2 , 3)        | Action           | 
+| :-------------: |:-------------:| 
+| M	{\<address>}	{\<value>}     | Display the contents of the memory word starting at address \<address> and ending at \<address+3 bytes>. If \<address> is not specified, use the previous word address + 4. If \<value> is specified, overwrite the memory contents with the specified value. If \<address> is not word-aligned, data manipulations will be necesssary to display the proper word value.     |
+| col 2 is      | centered      |   
+| zebra stripes | are neat      |   
 
 
 
