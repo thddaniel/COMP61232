@@ -1,5 +1,6 @@
 		AREA	vectors, CODE, READWRITE
 		EXPORT	INITVECTORS
+		EXTERN	My_Monitor_Handler
 
 		;install the exception handlers at reset
 		;by copying a precompiled block from RAM to adress 0
@@ -27,7 +28,7 @@ Vector_Init_Block
 
 
 Reset_Addr      DCD    Default_Start_Boot	;Useless when using the debugger
-Undefined_Addr  DCD    Default_Undefined_Handler
+Undefined_Addr  DCD    My_Monitor_Handler
 SWI_Addr        DCD    Default_SWI_Handler
 Prefetch_Addr   DCD    Default_Prefetch_Handler
 Abort_Addr      DCD    Default_Abort_Handler
