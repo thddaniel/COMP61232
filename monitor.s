@@ -2,6 +2,7 @@
         IMPORT  Getline
 		
 		EXPORT My_Monitor_Handler
+		EXPORT My_SWI_Handler
 
 ;******************************************************
 ;        Enter your full name here please             *
@@ -196,6 +197,9 @@ DECEXIT	MOV		r0, #0x0d
 		LDR		r5,	REGTMP		;Restore r5. For APCS Compliance
 		MOV		pc, lr		;return
 
+
+
+
 ;;;;;;;;;;;;;start of TextOut routine from earlier exercise;;;;;;;;; 
 TextOut	;output string starting at [r14]
 		MOV		r0, #0x3			;select Angel SYS_WRITEC function
@@ -209,6 +213,8 @@ NxtTxt	LDRB	r1, [r14], #1		;get next character
 ;;;;;;;;;;;;;end of textout routine from earlier exercise;;;;;;;;;;;
 		MOV		pc,	lr
 		
+		
+		
 
 ;***********************************************************************
 ;
@@ -219,6 +225,18 @@ NxtTxt	LDRB	r1, [r14], #1		;get next character
 ;
 ;
 ;***********************************************************************
+		
+My_SWI_Handler
+		STR		r13, R13TMP			;save r13
+		LDR		r13, [r14, #-4]		;get swi instruction
+		BIC		r13, r13, #0xff000000	;extract swi number
+		CMP		r13, #0x00			;this swi ?
+		BEQ		DoIt
+		LDR		r13, R13TMP			;restore r13
+		MOVS	pc, r14				;return to user mode code
+DoIt
+		LDR		r13, R13TMP	
+
         
 
 My_Monitor_Handler
@@ -290,15 +308,15 @@ DSETDISPLAY
  	
 		
 		;******test***************************
-		ADR		r1,	BASEM
-		LDR		r1,	[r1]
-		LDR		r2, VALUE		;get value to print
-		CMP		r1, #0	
-		BEQ	PHexOut
-		CMP		r1, #1	
-		BEQ	PBinOut
-		CMP		r1, #2	
-		BEQ	PDecOut
+;		ADR		r1,	BASEM
+;		LDR		r1,	[r1]
+;		LDR		r2, VALUE		;get value to print
+;		CMP		r1, #0	
+;		BEQ	PHexOut
+;		CMP		r1, #1	
+;		BEQ	PBinOut
+;		CMP		r1, #2	
+;		BEQ	PDecOut
 		;******end test **********************
 
 		LDR		lr, R14TMP
@@ -307,26 +325,26 @@ DSETDISPLAY
 		
 ;******test**********
 
-PHexOut
-		BL		TextOut
-		= "Test HexOut Function:", &0a, &0d, 0 
-		BL		HexOut			;call hexadecimal output
-		LDR		lr, R14TMP
-		MOV		pc, lr	
-		
-PBinOut		
-		BL		TextOut
-		= "Test BinOut Function:", &0a, &0d, 0 		
-		BL		BinOut			;call hexadecimal output
-		LDR		lr, R14TMP
-		MOV		pc, lr	
-
-PDecOut		
-		BL		TextOut
-		= "Test DecOut Function:", &0a, &0d, 0 		
-		BL		DecOut			;call hexadecimal output
-		LDR		lr, R14TMP
-		MOV		pc, lr	
+;PHexOut
+;		BL		TextOut
+;		= "Test HexOut Function:", &0a, &0d, 0 
+;		BL		HexOut			;call hexadecimal output
+;		LDR		lr, R14TMP
+;		MOV		pc, lr	
+;		
+;PBinOut		
+;		BL		TextOut
+;		= "Test BinOut Function:", &0a, &0d, 0 		
+;		BL		BinOut			;call hexadecimal output
+;		LDR		lr, R14TMP
+;		MOV		pc, lr	
+;
+;PDecOut		
+;		BL		TextOut
+;		= "Test DecOut Function:", &0a, &0d, 0 		
+;		BL		DecOut			;call hexadecimal output
+;		LDR		lr, R14TMP
+;		MOV		pc, lr	
 
 
 ;*******end test*****
@@ -343,7 +361,8 @@ ECommand
 		CMP		r3, #0
 		BEQ		ESET
 		
-
+		BL TextOut
+        	= "Invalid  Entered!! Try again!!",&0a, &0d, 0
 		
 		LDR		lr, R14TMP
 		MOV		pc, lr 
@@ -372,6 +391,7 @@ ESET
 
 QCommand
 		LDMFD	sp!, {r0-r12,pc}^
+		LDR		r13, R13TMP			;restore r13
 		MOVS	pc, r14				;return to user mode code
 		
 	

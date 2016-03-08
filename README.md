@@ -32,7 +32,7 @@
 1. ~~Handle undefined instructions and Implement Q command~~
 2. ~~Implement D command (decimal, hexadecimal and binary print functions)~~
 3. ~~Implement E command ( little-endian & big-endian)~~
-4. Implement software interrupt (SWI)
+4. ~~Implement software interrupt (SWI)~~
 5. Implement M command
 6. Implement m command
 7. Implement R/r command
@@ -61,3 +61,5 @@ Some answers of labs(swi) [answers](http://apt.cs.manchester.ac.uk/ftp/pub/apt/j
 - Add little-endian & big-endian support in print functions, write a E command to switch on the basis of ENDIAN.
 
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/3.png" width="200" height="" />
+
+- Add software interrupt (SWI), modify vectors.s and monitor.s. In order to debug the interrupted application, It will enter to Command interface when it extracted the same swi number.
