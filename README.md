@@ -10,6 +10,8 @@
 # Mission
 
 
+
+
 |  Command (params1, 2 , 3)       | Action  |
 |: --------  : |  :-----:   |
 | M	{\<address>}	{\<value>}     | Display the contents of the memory word starting at address \<address> and ending at \<address+3 bytes>. If \<address> is not specified, use the previous word address + 4. If \<value> is specified, overwrite the memory contents with the specified value. If \<address> is not word-aligned, data manipulations will be necesssary to display the proper word value.     |
@@ -22,14 +24,6 @@
 
 
 
-table doesn't work?
-
-
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
 
 
 
