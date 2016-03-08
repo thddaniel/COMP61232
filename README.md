@@ -50,9 +50,14 @@ Some answers of labs(swi) [answers](http://apt.cs.manchester.ac.uk/ftp/pub/apt/j
 ##08/03/2016
 
 - Change vectors.s. Raised an exception and handle undefined instructions successfully.
-![1](https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/1.png =250x)
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/1.png" width="200" height="" />
+
 - Add Q command, return to user mode code.
 - Write HexOut, BinOut , DecOut and TextOut functions. First store initial value(0x1234abcd) into r2 and then test the program in the DCOMMAND routine. BASEM records the way to print. 
-![2](https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/2.png =250x)
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/2.png" width="200" height="" />
+
 - Add little-endian & big-endian support in print functions, write a E command to switch on the basis of ENDIAN.
-![3](https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/3.png =250x)
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/3.png" width="200" height="" />
