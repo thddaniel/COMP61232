@@ -11,7 +11,7 @@
 
 
 |  Command (params1, 2 , 3)       | Action  |
-|: --------  : | :-----:  |
+|: --------  : |  :-----:   |
 | M	{\<address>}	{\<value>}     | Display the contents of the memory word starting at address \<address> and ending at \<address+3 bytes>. If \<address> is not specified, use the previous word address + 4. If \<value> is specified, overwrite the memory contents with the specified value. If \<address> is not word-aligned, data manipulations will be necesssary to display the proper word value.     |
 | m	{\<address>} {\<value>}       |   Display the contents of the memory byte. If \<address> is not specified, use the previous byte address + 1. If \<value> is specified, overwrite the memory contents with the specified value.   |
 | R\r {\<number>}	{\<value>}|   Display the contents of the specified register. If \<number> is not specified, display the contents of all registers. If \<value> is specified, overwrite the register contents with the specified value. Handle both decimal and hexadecimal register numbers: "R 12" and "R C" should point to the same register. Think about special needs for every value of \<value>. |
@@ -19,6 +19,15 @@
 | E	{0 \| 1}        |  Change the data representation to either little-endian ("E 0", default) or big-endian ("E 1"). No parameter indicates toggle the representation.|
 | D	{10 \| 16 \| 2} |   Change the display of memory/register to decimal, hexadecimal or binary. |
 | Q      |   Leave the monitor and return to the main application.  |
+
+
+
+table doesn't work?
+| Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
 
 
 
