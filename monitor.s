@@ -48,7 +48,7 @@ $l      MOV     r0, #0x7        ;select Angel SYS_READC function
 
 HexOut	STR		r12,	REGTMP	; Preserve r12 value so we can use register
 		MOV		r3, #8			;nibble count = 8
-		ADR		r1, CHAROUT
+		ADRL		r1, CHAROUT
 		MOV		r0, #0x30
 		STR		r0, [r1]		;store character to print
 		WriteC					;print character
@@ -258,7 +258,8 @@ L1      bl      Getline
         ldr     r4, [r0, #8]    ;get 2nd param
         ldr     r5, [r0, #12]   ;get 3rd param
 
-
+		ADR		r6, StackInit	;StackTop,used for Mcommand
+		
 
 ; OK start your code here
 		ADR		lr,	L1
@@ -266,6 +267,8 @@ L1      bl      Getline
 
 		;................
 		;................
+		CMP		r1, #0x4D		; 'M' Ascii
+		BEQ		MCommand
 		CMP		r1, #0x44		; 'D' ascii
 		BEQ		DCommand
 		CMP		r1, #0x45		; 'E' ascii
@@ -278,9 +281,72 @@ L1      bl      Getline
 		;Test Print functions with different display, depends on BASEM
 
 
+MCommand
+		STR		lr, R14TMP
+		CMP		r2, #0			; if params == 0
+		BEQ		MPARAMS0
+		CMP		r2, #1			; if params == 1
+		BEQ		MPARAMS1
+		CMP		r2, #2			; if params == 2
+		BEQ		MPARAMS2
+		BL TextOut
+        	= "Invalid  Entered!! Try again!!",&0a, &0d, 0
+		LDR		lr, R14TMP
+		MOV		pc, lr 
 
+
+
+
+MPARAMS0
+		LDR		r3,	[r6]		; Load last memory address
+		ADD		r3, r3, #4		; use the previous word address + 4
+		STR		r3,	[r6]		; Preserve r6 to restore last memory
+		
+MPARAMS1
+
+		LDR		r2,	[r3]		; Prepare for printing
+		STR		r3,	[r6]		; Preserve r6 to restore last memory
+		
+		ANDS	r0, r3,	#0x03	; Check word-aligned
+		BLNE 	ADJUSTWORD
+								
+		BL		PRINT
+		LDR		lr, R14TMP
+		MOV		pc, lr		
+		
+MPARAMS2
+		STR		r3,	[r6]		; Preserve r6 to restore last memory
+		ANDS	r0, r3,	#0x03	; Check word-aligned
+		BLNE 	ADJUSTWORD
+		MOV		r12, #4
+		MOV		r2, #0
+MLOOP	MOV		r0, r4, LSR r2	; Shift	Desired byte in least significant byte	
+		BIC		r0, r0, #0xFFFFFF00 ; Mask out undesired bits
+		STRB	r0, [r3]
+		ADD		r3, r3, #1		; Move to next byte
+		ADD		r2, r2, #8		; Adjust Shift counter
+		SUBS	r12, r12, #1	; Adjust Byte Counter
+		BNE		MLOOP
+		LDR		lr, R14TMP
+		MOV		pc, lr
+	
+		
+ADJUSTWORD
+		ADD		r3, r3, #4	
+		SUB		r3, r3, r0
+		LDR		r2,	[r3]	
+		MOV		pc, lr
+		
 
 		
+
+PRINT			
+		ADR		r0,	BASEJUMP		;Select Base for printing
+		ADR		r1,	BASEM
+		LDR		r1,	[r1]
+		LDR		pc,	[r0,r1,LSL #2]		; jump to appropriate routine
+		
+
 
 
 
@@ -407,6 +473,11 @@ REGTMP	DCD		0
 ENDIAN	DCD		0
 R13TMP	DCD		0
 R14TMP	DCD		0
+
+BASEJUMP
+		DCD		BinOut
+		DCD		DecOut
+        DCD		HexOut
 
         AREA stack, DATA, READWRITE
 ; Place your data here
