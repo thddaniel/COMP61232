@@ -76,11 +76,11 @@ Some answers of labs(swi) [answers](http://apt.cs.manchester.ac.uk/ftp/pub/apt/j
 
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/M1.png" width="" height="" />
 
-If there is no parameter input, it will use the previous word address + 4. So, we preserve r6 to restore last time memory address.
+If there is no parameter input, it will use the previous word address + 4. So, we preserve r6 to restore last time memory address. Note：when the first time call this route, it will print stack top address.
 
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/M2.png" width="" height="" />
 
-If \<address> is not word-aligned, data manipulations will be necessary to display the proper word value(next word-aligned address). 
+If \<address> is not word-aligned, data manipulations will be necessary to display or write(?) the proper word value(next word-aligned address). 
 
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/M3.png" width="" height="" />
 
@@ -88,7 +88,7 @@ If \<address> is not word-aligned, data manipulations will be necessary to displ
 
 1 . Immediate value out of range.    [Solve problem](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0204j/Babcjaii.html) Use ADRL instead of ADR
 
-<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/issue1.png" width="200" height="" />
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/issue1.png" width="400" height="" />
 
 2 . Use BLNE operation,  called routine doesn't return? why?
 
