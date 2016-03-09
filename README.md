@@ -31,8 +31,8 @@
 2. ~~Implement D command (decimal, hexadecimal and binary print functions)~~
 3. ~~Implement E command ( little-endian & big-endian)~~
 4. ~~Implement software interrupt (SWI)~~
-5. Implement M command
-6. Implement m command
+5. ~~Implement M command~~
+6. ~~Implement m command~~
 7. Implement R/r command
 8. Implement C command
 9. Write parsing routine to replace getline.a
@@ -84,6 +84,17 @@ If \<address> is not word-aligned, data manipulations will be necessary to displ
 
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/M3.png" width="" height="" />
 
+
+###COMMIT INFORMATION "add m command"
+
+- The same step as previous Mcommand. This has no real relevance with endian. In addition, the print functions were modified to support printing byte. It is notable that It only overwrite one byte instead of 4 bytes when it has \<value> input.
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/m4.png" width="" height="" />
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/m5.png" width="" height="" />
+
+
+
 #Issues
 
 1 . Immediate value out of range.    [Solve problem](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0204j/Babcjaii.html) Use ADRL instead of ADR
@@ -92,4 +103,8 @@ If \<address> is not word-aligned, data manipulations will be necessary to displ
 
 2 . Use BLNE operation,  called routine doesn't return? why?
 
-Add MOV pc, lr at last line.
+  Solve: Add MOV pc, lr at last line.
+
+3 . Error starting external debugger.  Process Error Code 87 (0x57) The parameter is incorrect. 
+  
+  Solve: Restart project.
