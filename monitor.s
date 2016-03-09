@@ -15,6 +15,9 @@
 ;
 ; Reminder: This Monitor is usually called in privileged mode. Don't forget (for example, when displaying registers via the 'R/r' command) that the debugged application is running in user mode.
 
+
+
+
 ;********************************************************
 ;Print functions: HexOut, BinOut , DecOut , TextOut		*
 ;Usage:						
@@ -51,16 +54,35 @@ HexOut	STR		r12,	REGTMP	; Preserve r12 value so we can use register
 		ADRL		r1, CHAROUT
 		MOV		r0, #0x30
 		STR		r0, [r1]		;store character to print
-		WriteC					;print character
+		WriteC					;print character 0
 		MOV		r0, #0x78
 		STR		r0, [r1]		;store character to print
-		WriteC					;print character
+		WriteC					;print character x
+		
+		
+		
+		LDR		r4, BASEB
+		CMP		r4, #1
+		BEQ		PBYTE0
 		
 		LDR		r12, ENDIAN
 		CMP		r12, #0
 		BEQ		LELOOP
 		MOV		r3, r3, LSR #1	;Change r3 to byte count
 		B		BELOOP
+
+		
+PBYTE0	
+		MOV		r4, #0
+		ADRL	r8,	BASEB
+		STR		r4,	[r8]		;restore 		
+		MOV		r2, r2, LSL #24	;shift left one nibble
+		MOV 	r3, #2
+
+		
+
+
+		
 			
 		
 LELOOP	MOV		r0, r2, LSR #28	;get top nibble
@@ -70,9 +92,12 @@ LELOOP	MOV		r0, r2, LSR #28	;get top nibble
 		STR		r0, [r1]		;store character to print
 		WriteC					;print character
 		MOV		r2, r2, LSL #4	;shift left one nibble
+		
 		SUBS	r3, r3, #1	;decrement nibble count
 		BNE		LELOOP		;if more do next nibble
 		B		HexEx
+		
+		
 			
 BELOOP	BIC		r12, r2, #0xFFFFFF00 ;Clear upper bytes
 		MOV		r0,	r12, LSR #4
@@ -87,7 +112,7 @@ BELOOP	BIC		r12, r2, #0xFFFFFF00 ;Clear upper bytes
 		ADDLE	r0, r0, #"0"	;ASCI numeric
 		STR		r0, [r1]		;store character to print
 		WriteC					;print character
-		 
+
 		MOV		r2, r2, LSR #8	;shift right one byte
 		SUBS	r3, r3, #1	;decrement nibble count
 		
@@ -107,8 +132,12 @@ HexEx	MOV		r0, #0x0d
 		
 
 BinOut	STR		r12,	REGTMP	; Preserve r12 value so we can use register
-		ADR		r1, CHAROUT
-		MOV		r3, #32			;bit count = 8
+		ADRL	r1, CHAROUT
+		MOV		r3, #32			
+		
+		LDR		r4, BASEB
+		CMP		r4, #1
+		BEQ		PBYTE1	
 		
 		LDR		r12, ENDIAN
 		CMP		r12, #0
@@ -125,7 +154,16 @@ SWAP	SUB		r0, r0, #8
 		BNE 	SWAP
 		MOV		r2,	r12
 		MOV		r3, #32
+	
+	
+PBYTE1	
+		MOV		r4, #0
+		ADRL	r8,	BASEB
+		STR		r4,	[r8]		;restore 		
+		MOV		r2, r2, LSL #24	;shift left one nibble
+		MOV 	r3, #8
 		
+			
 LOOP2	MOV		r0, r2, LSR #31	;get top nibble
 		ADD		r0, r0, #0x30	; get print number
 		STR		r0, [r1]		;store character to print
@@ -258,7 +296,8 @@ L1      bl      Getline
         ldr     r4, [r0, #8]    ;get 2nd param
         ldr     r5, [r0, #12]   ;get 3rd param
 
-		ADR		r6, StackInit	;StackTop,used for Mcommand
+		ADR		r6, StackInit	;StackTop,used for Mcommand first time
+		ADR		r7, StackInit	;StackTop,used for mcommand first time
 		
 
 ; OK start your code here
@@ -269,6 +308,8 @@ L1      bl      Getline
 		;................
 		CMP		r1, #0x4D		; 'M' Ascii
 		BEQ		MCommand
+		CMP		r1, #0x6D		; 'm' Ascii
+		BEQ		mCommand
 		CMP		r1, #0x44		; 'D' ascii
 		BEQ		DCommand
 		CMP		r1, #0x45		; 'E' ascii
@@ -338,7 +379,48 @@ ADJUSTWORD
 		MOV		pc, lr
 		
 
+
+mCommand
+		STR		lr, R14TMP
+		CMP		r2, #0			; if params == 0
+		BEQ		mPARAMS0
+		CMP		r2, #1			; if params == 1
+		BEQ		mPARAMS1
+		CMP		r2, #2			; if params == 2
+		BEQ		mPARAMS2
+		BL TextOut
+        	= "Invalid  Entered!! Try again!!",&0a, &0d, 0
+		LDR		lr, R14TMP
+		MOV		pc, lr 
+
+mPARAMS0
+		LDR		r3,	[r7]		; Load last memory address
+		ADD		r3, r3, #1		; use the previous word address + 1
+		STR		r3,	[r7]		; Preserve r7 to restore last memory
+
+mPARAMS1
 		
+		STR		r3,	[r7]		; Preserve r7 to restore last memory
+		LDR		r2,	[r3]		; Prepare for printing
+		
+		MOV		r4, #1			;Prepare for print one byte
+		ADR		r8,	BASEB
+		STR		r4,	[r8]
+		
+		BL		PRINT
+		LDR		lr, R14TMP
+		MOV		pc, lr	
+
+mPARAMS2	
+		STR		r3,	[r7]		; Preserve r7 to restore last memory
+		
+		LDR		r2,	[r3]
+		BIC		r2, r2, #0x000000FF 
+		BIC		r4, r4, #0xFFFFFF00 
+		ORR  	r4,	r4, r2
+		STREQB	r4,	[r3]	
+		LDR		lr, R14TMP
+		MOV		pc, lr	
 
 PRINT			
 		ADR		r0,	BASEJUMP		;Select Base for printing
@@ -467,7 +549,8 @@ StackInit
 
 
 VALUE	DCD		&1234abcd
-BASEM	DCD		2
+BASEM	DCD		0
+BASEB	DCD		0
 CHAROUT	DCD		0		
 REGTMP	DCD		0
 ENDIAN	DCD		0
@@ -475,9 +558,9 @@ R13TMP	DCD		0
 R14TMP	DCD		0
 
 BASEJUMP
+		DCD		HexOut
 		DCD		BinOut
-		DCD		DecOut
-        DCD		HexOut
+        DCD		DecOut
 
         AREA stack, DATA, READWRITE
 ; Place your data here
