@@ -94,6 +94,18 @@ If \<address> is not word-aligned, data manipulations will be necessary to displ
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/m5.png" width="" height="" />
 
 
+##010/03/2016
+
+###COMMIT INFORMATION "add R/r command"
+
+-  This stack is an area of memory which stores r0~r12 and r14. In order to get the contents of the specified register, point to the bottom of stack and then add 4 address each time. Note: \<address> need to be filtered.
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/R1.png" width="" height="" />
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/R2.png" width="" height="" />
+
+
+
 
 #Issues
 

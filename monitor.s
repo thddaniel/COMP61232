@@ -216,7 +216,7 @@ GETCHAR	CMP		r3,	#0
 INC		MOV		r0,	r0,	LSR	#1
 		B		GETCHAR
 DECPRINT		
-		ADR		r1,	CHAROUT
+		ADRL	r1,	CHAROUT
 		LDR		r0,	[r13]
 		ADD		r13, r13, #4
 		CMP		r0,	#0
@@ -273,7 +273,7 @@ My_SWI_Handler
 		LDR		r13, R13TMP			;restore r13
 		MOVS	pc, r14				;return to user mode code
 DoIt
-		LDR		r13, R13TMP	
+		LDR		r13, R13TMP			; doesn't finish yet...
 
         
 
@@ -296,8 +296,8 @@ L1      bl      Getline
         ldr     r4, [r0, #8]    ;get 2nd param
         ldr     r5, [r0, #12]   ;get 3rd param
 
-		ADR		r6, StackInit	;StackTop,used for Mcommand first time
-		ADR		r7, StackInit	;StackTop,used for mcommand first time
+		ADR		r6, StackInit	;StackTop,used for Mcommand first time; need to modify later
+		ADR		r7, StackInit	;StackTop,used for mcommand first time; need to modify later
 		
 
 ; OK start your code here
@@ -310,6 +310,10 @@ L1      bl      Getline
 		BEQ		MCommand
 		CMP		r1, #0x6D		; 'm' Ascii
 		BEQ		mCommand
+		CMP		r1, #0x52		; 'R' Ascii
+		BEQ		RCommand
+        CMP		r1, #0x72		; 'r' Ascii
+		BEQ		RCommand	
 		CMP		r1, #0x44		; 'D' ascii
 		BEQ		DCommand
 		CMP		r1, #0x45		; 'E' ascii
@@ -421,6 +425,108 @@ mPARAMS2
 		STREQB	r4,	[r3]	
 		LDR		lr, R14TMP
 		MOV		pc, lr	
+		
+		
+RCommand
+		STR		lr, R14TMP
+		CMP		r2, #0			; if params == 0
+		BEQ		RPARAMS0
+		CMP		r2, #1			; if params == 1
+		BEQ		RPARAMS1
+		CMP		r2, #2			; if params == 2
+		BEQ		RPARAMS2
+		BL TextOut
+        	= "Invalid  Entered!! Try again!!",&0a, &0d, 0
+		LDR		lr, R14TMP
+		MOV		pc, lr 
+		
+		
+RPARAMS0
+		
+		ADR		r8, Messages
+		MOV		r9, #13
+		MOV		r5, #0
+		
+RPRINT		
+		BL		PrintNextMessage
+		
+		LDR 	r2, [sp,r5,LSL #2]
+		ADD		r5,	r5, #1
+		BL 		PRINT
+		SUBS	r9, r9, #1	;
+		BNE		RPRINT		;r0~r12
+		
+		BL		PrintNextMessage ;r13
+		LDR		r2, R13TMP
+		BL 		PRINT
+			
+		BL		PrintNextMessage ;r14
+		LDR 	r2, [sp,r5,LSL #2]
+		BL 		PRINT
+		;r15
+		
+		LDR		lr, R14TMP
+		MOV		pc, lr
+
+RPARAMS1
+		
+		CMP		r3, #0x0F		
+		SUBGT	r3,	r3,	#6
+		CMP		r3, #0x0E		
+		BGT		REXIT
+		;BL TextOut
+        ;	= "Test r0~r14",&0a, &0d, 0
+        
+		
+		CMP		r3, #0x0D 
+		BLT		RPNORMAL		;print r0~12
+		CMP		r3, #0x0D
+		BEQ		RPSP			;print r13
+		LDR 	r2, [sp,#52]
+		BL 		PRINT		;print r14
+		B		REXIT				
+
+RPNORMAL		
+		LDR 	r2, [sp,r3,LSL #2]
+		BL 		PRINT
+		B		REXIT
+
+RPSP		
+		LDR		r2, R13TMP
+		BL 		PRINT        
+		B		REXIT
+	
+
+
+RPARAMS2
+		CMP		r3,	#0x0D		
+		BLT		RWNORMAL		;Write r0~12
+;		CMP		r3, #0x0D
+;		BEQ		RWSP			;Write r13
+		CMP		r3, #0x0E
+		BEQ		RWLR
+		B		REXIT				
+
+RWNORMAL		
+		STR 	r4, [sp,r3,LSL #2]
+		B		REXIT
+
+;RWSP		
+;		STR		r4, R13    
+;		B		REXIT
+
+RWLR
+		STR 	r4, [sp,#52]	;Write r14
+				
+REXIT		
+		LDR		lr, R14TMP
+		MOV		pc, lr
+
+
+		
+		
+	
+		
 
 PRINT			
 		ADR		r0,	BASEJUMP		;Select Base for printing
@@ -428,8 +534,6 @@ PRINT
 		LDR		r1,	[r1]
 		LDR		pc,	[r0,r1,LSL #2]		; jump to appropriate routine
 		
-
-
 
 
 DCommand
@@ -561,6 +665,38 @@ BASEJUMP
 		DCD		HexOut
 		DCD		BinOut
         DCD		DecOut
+
+
+PrintNextMessage	;output string starting at [r8]
+		MOV		r0, #0x3			;select Angel SYS_WRITEC function
+NextTxt	LDRB	r1, [r8], #1		;get next character
+		CMP		r1, #0				;test for end mark
+		SUBNE	r1, r8, #1			;setup r1 for call to SWI
+		SWINE	SWI_ANGEL			;if not end, print..
+		BNE		NextTxt				; ..and loop
+		MOV		pc, r14
+
+Messages
+		= "R0 = ", &0a, &0d, 0
+		= "R1 = ", &0a, &0d, 0
+		= "R2 = ", &0a, &0d, 0
+		= "R3 = ", &0a, &0d, 0
+		= "R4 = ", &0a, &0d, 0
+		= "R5 = ", &0a, &0d, 0
+		= "R6 = ", &0a, &0d, 0
+		= "R7 = ", &0a, &0d, 0
+		= "R8 = ", &0a, &0d, 0
+		= "R9 = ", &0a, &0d, 0
+		= "R10 = ", &0a, &0d, 0
+		= "R11 = ", &0a, &0d, 0
+		= "R12 = ", &0a, &0d, 0
+		= "R13 = ", &0a, &0d, 0
+		= "R14 = ", &0a, &0d, 0
+;		= "R15 = ", &0a, &0d, 0
+		ALIGN
+		
+		
+
 
         AREA stack, DATA, READWRITE
 ; Place your data here
