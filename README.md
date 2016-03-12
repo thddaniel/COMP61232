@@ -33,16 +33,17 @@
 4. ~~Implement software interrupt (SWI)~~
 5. ~~Implement M command~~
 6. ~~Implement m command~~
-7. Implement R/r command
+7. ~~Implement R/r command~~
 8. Implement C command
 9. Write parsing routine to replace getline.a
 10. Optimize the code
 
 #Resource
 
-All subroutines should adhere to the APCS [ARM Cross-Platform Development](https://moodle.cs.man.ac.uk/file.php/274/lowpower-cbt/system_development/arm_cross/step1.html)
+- All subroutines should adhere to the APCS [ARM Cross-Platform Development](https://moodle.cs.man.ac.uk/file.php/274/lowpower-cbt/system_development/arm_cross/step1.html)
 
-Some answers of labs(swi) [answers](http://apt.cs.manchester.ac.uk/ftp/pub/apt/john/peve-arm/answers/)
+- Some answers of labs(swi) [answers](http://apt.cs.manchester.ac.uk/ftp/pub/apt/john/peve-arm/answers/)
+- [Memory copy ways](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka13544.html)
 
 #Changelog
 
@@ -94,7 +95,7 @@ If \<address> is not word-aligned, data manipulations will be necessary to displ
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/m5.png" width="" height="" />
 
 
-##010/03/2016
+##10/03/2016
 
 ###COMMIT INFORMATION "add R/r command"
 
@@ -104,8 +105,16 @@ If \<address> is not word-aligned, data manipulations will be necessary to displ
 
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/R2.png" width="500" height="500" />
 
+##12/03/2016
 
+###COMMIT INFORMATION "change SWI & add C command"
 
+- Modified the swi function.
+- add C command (Byte by Byte memory copy).
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/C1.png" width="500" height="500" />
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/C2.png" width="500" height="500" />
 
 #Issues
 
