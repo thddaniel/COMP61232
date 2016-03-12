@@ -34,7 +34,7 @@
 5. ~~Implement M command~~
 6. ~~Implement m command~~
 7. ~~Implement R/r command~~
-8. Implement C command
+8. ~~Implement C command~~
 9. Write parsing routine to replace getline.a
 10. Optimize the code
 
@@ -112,9 +112,9 @@ If \<address> is not word-aligned, data manipulations will be necessary to displ
 - Modified the swi function.
 - add C command (Byte by Byte memory copy).
 
-<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/C1.png" width="500" height="500" />
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/C1.png" width="" height="" />
 
-<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/C2.png" width="500" height="500" />
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/C2.png" width="" height="" />
 
 #Issues
 
