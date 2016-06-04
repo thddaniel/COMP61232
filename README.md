@@ -35,8 +35,8 @@
 6. ~~Implement m command~~
 7. ~~Implement R/r command~~
 8. ~~Implement C command~~
-9. Write parsing routine to replace getline.a
-10. Optimize the code
+9. ~~Write parsing routine to replace getline.a~~
+10. ~~Optimize the code~~
 
 #Resource
 
@@ -46,6 +46,8 @@
 - [Memory copy ways](http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka13544.html)
 
 #Changelog
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/overview.png" width="" height="" />
 
 ##08/03/2016
 
@@ -63,6 +65,8 @@
 - Add little-endian & big-endian support in print functions, write a E command to switch on the basis of ENDIAN.
 
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/3.png" width="200" height="" />
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/4.png" width="" height="" />
 
 ###COMMIT INFORMATION "Implement software interrupt"
 
@@ -85,6 +89,7 @@ If \<address> is not word-aligned, data manipulations will be necessary to displ
 
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/M3.png" width="" height="" />
 
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/7.png" width="" height="" />
 
 ###COMMIT INFORMATION "add m command"
 
@@ -101,6 +106,9 @@ If \<address> is not word-aligned, data manipulations will be necessary to displ
 
 -  This stack is an area of memory which stores r0~r12 and r14. In order to get the contents of the specified register, point to the bottom of stack and then add 4 address each time. Note: \<address> need to be filtered.
 
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/12.png" width="" height="" />
+
+
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/R1.png" width="500" height="500" />
 
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/R2.png" width="500" height="500" />
@@ -111,6 +119,10 @@ If \<address> is not word-aligned, data manipulations will be necessary to displ
 
 - Modified the swi function.
 - add C command (Byte by Byte memory copy).
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/14.png" width="" height="" /> 
+
+<img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/16.png" width="" height="" /> 
 
 <img src="https://raw.githubusercontent.com/thddaniel/COMP61232/master/images/C1.png" width="" height="" />
 

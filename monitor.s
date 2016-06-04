@@ -277,8 +277,6 @@ RWLR
 		
 CCommand
 		STR		lr, R14TMP
-		CMP		r5, #0
-		BEQ		EXIT
 		CMP		r2, #3			
 		BEQ		COPYMEMORY
 		BL TextOut
@@ -287,12 +285,145 @@ CCommand
 
 		
 COPYMEMORY
+		CMP		r5, #0
+		BEQ		EXIT    
 		CMP		r3, r4	     ;compare source & dest  
-		BGT		FBCPLOOP     ;HIGHSOURCE
-		ADD		r3,r3,r5    ;last source Address +1
+		BGT		HIGHSOURCE    ;
+		BLT		HIGHDEST	 ;
+		BEQ 	EXIT
+
+HIGHSOURCE
+		ANDS	r1, r3,	#0x03	; Check word-aligned
+		ANDS	r2, r4,	#0x03	
+		ORR		r0, r1, r2
+		CMP		r0, #0
+		BEQ		FSTARTCP
+		CMP     r1, r2
+		BEQ		FADJUSTBYTE
+		B		FBCPLOOP
+
+FSTARTCP		
+		CMP		r5,#27
+		BGT		MFWCPLOOP
+		CMP		r5,#3
+		BGT		FWCPLOOP
+		B		FBCPLOOP
+		
+MFWCPLOOP					  ;Multi-Word Forward Copy. 	 
+		LDMIA	r3!,{r6-r12}
+		STMIA	r4!,{r6-r12}
+		SUB		r5, r5,	#28
+		CMP		r5, #27
+		BGT		MFWCPLOOP
+		CMP		r5,#3
+      	BGT 	FWCPLOOP
+      	CMP		r5,#0
+      	BGT		FBCPLOOP
+      	B		EXIT
+
+FWCPLOOP					  ;Forward copy (word)
+      	LDR 	r0, [r3], #4
+      	STR 	r0, [r4], #4
+      	SUB 	r5, r5, #4
+      	CMP		r5,#3
+      	BGT 	FWCPLOOP
+      	CMP		r5,#0
+      	BGT		FBCPLOOP
+      	B		EXIT
+				
+FBCPLOOP					  ;Forward copy (byte)
+
+		LDRB	r0,	[r3],#1
+		STRB	r0,	[r4],#1
+		SUBS	r5, r5, #1
+		BGT		FBCPLOOP
+		B		EXIT
+
+FADJUSTBYTE
+		MOV		r2, #4
+		SUB		r2, r2, r1
+		SUB		r5, r5, r2
+		
+FADJUSTLOOP
+		LDRB	r0,	[r3],#1
+		STRB	r0,	[r4],#1
+		SUBS	r2, r2,  #1
+		BGT		FADJUSTLOOP
+		B		FSTARTCP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+HIGHDEST
+		ADD		r3,r3,r5     ;last source Address +1
 		ADD		r4,r4,r5	 ;last dest Address +1
-		BLT		BBCPLOOP	 ;HIGHDEST
+		ANDS	r1, r3,	#0x03	; Check word-aligned
+		ANDS	r2, r4,	#0x03	
+		ORR		r0, r1, r2
+		CMP		r0, #0
+		BEQ		BSTARTCP
+		CMP     r1, r2
+		BEQ		BADJUSTBYTE
+		B		BBCPLOOP
+
+BSTARTCP
+		CMP		r5,#27
+		BGT		MBWCPLOOP
+		CMP		r5,#3
+		BGT		BWCPLOOP
+		B		BBCPLOOP
+		
+MBWCPLOOP					  ;Multi-Word backward Copy. 	 
+		SUB		r3, r3,	#28
+		SUB		r4, r4,	#28
+		LDMIA	r3 ,{r6-r12}
+		STMIA	r4 ,{r6-r12}
+		SUB		r5, r5,	#28
+		CMP		r5, #27
+		BGT		MBWCPLOOP
+		CMP		r5,#3
+      	BGT 	BWCPLOOP
+      	CMP		r5,#0
+      	BGT		BBCPLOOP
+      	B		EXIT
+		
+BWCPLOOP					  ;backward copy (word)
+      	SUB		r3, r3,	#4
+		SUB		r4,	r4,	#4
+      	LDR 	r0, [r3]
+      	STR 	r0, [r4]
+      	SUB 	r5, r5, #4
+      	CMP		r5,#3
+      	BGT 	BWCPLOOP
+      	CMP		r5,#0
+      	BGT		BBCPLOOP
+      	B		EXIT
+
+BBCPLOOP					  ;backward copy (byte)
+
+		SUB		r3, r3,	#1
+		SUB		r4,	r4,	#1
+		LDRB	r0,	[r3]
+		STRB	r0,	[r4]
+		SUBS	r5, r5, #1
+		BGT		BBCPLOOP
 		B 		EXIT
+
+
+BADJUSTBYTE
+		SUB		r5, r5, r2		
+BADJUSTLOOP
+		SUB		r3, r3,	#1
+		SUB		r4,	r4,	#1
+		LDRB	r0,	[r3]
+		STRB	r0,	[r4]
+		SUBS	r2, r2,  #1
+		BGT		BADJUSTLOOP
+		B		BSTARTCP
+
+
+
+
 
 ;HIGHSOURCE
 ;		ADD		r0, r4, r5	;dest+length>?source
@@ -313,35 +444,6 @@ COPYMEMORY
 ;		B 		EXIT
 
 
-;CASE1	
-FBCPLOOP	;Forward copy (byte)
-
-		LDRB	r0,	[r3],#1
-		STRB	r0,	[r4],#1
-		SUBS	r5, r5, #1
-		BGT		FBCPLOOP
-		B 		EXIT
-
-
-
-
-;CASE3	
-;		ADD		r3,r3,#r5;	last source Address +1
-;		ADD		r4,r4,#r5;	last dest Address +1
-	
-BBCPLOOP	;backward copy (byte)
-
-		SUB		r3, r3,	#1
-		SUB		r4,	r4,	#1
-		LDRB	r0,	[r3]
-		STRB	r0,	[r4]
-		SUBS	r5, r5, #1
-		BGT		BBCPLOOP
-		B 		EXIT
-
-
-
-		
 
 		
 ;***********************************************************************
